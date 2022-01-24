@@ -6,14 +6,13 @@ on:
       - main
     # When something changes, excluded package/package-lock
     # and files that are included in minor and major releases
-    paths:
-      - "**"
-      - "!package.json"
-      - "!package-lock.json"
+    paths-ignore:
+      - "package.json"
+      - "package-lock.json"
       # Exclude files from `major`
-      - "!major.js"
+      - "major.js"
       # Exclude files from `minor`
-      - "!minor.js"
+      - "minor.js"
 
 jobs:
   release-new-patch-version:
