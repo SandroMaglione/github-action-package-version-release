@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    # When something changes, excluded package/package-lock
-    # and files that are included in minor and major releases
     paths:
       - "minor.js"
 
@@ -31,4 +29,6 @@ jobs:
           export GITHUB_ACTOR=$GITHUB_ACTOR
           npm version minor --force -m "New minor release by $GITHUB_ACTOR: %s"
       - name: Push release commit and tag to GitHub
-        run: git push gh-origin HEAD:master --tags
+        run: |
+          git push gh-origin HEAD:master
+          git push gh-origin --tags

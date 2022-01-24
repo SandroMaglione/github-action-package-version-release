@@ -4,16 +4,8 @@ on:
   push:
     branches:
       - master
-    # When something changes, excluded package/package-lock
-    # and files that are included in minor and major releases
-    paths-ignore:
-      - ".github"
-      - "package.json"
-      - "package-lock.json"
-      # Exclude files from `major`
-      - "major.js"
-      # Exclude files from `minor`
-      - "minor.js"
+    paths:
+      - "patch.js"
 
 jobs:
   release-new-patch-version:
@@ -37,4 +29,6 @@ jobs:
           export GITHUB_ACTOR=$GITHUB_ACTOR
           npm version patch --force -m "New patch release by $GITHUB_ACTOR: %s"
       - name: Push release commit and tag to GitHub
-        run: git push gh-origin HEAD:master --tags
+        run: |
+          git push gh-origin HEAD:master
+          git push gh-origin --tags
