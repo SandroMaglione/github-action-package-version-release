@@ -27,7 +27,7 @@ jobs:
       - name: Release major version
         run: |
           export GITHUB_ACTOR=$GITHUB_ACTOR
-          npm version major --force -m "New major release by $GITHUB_ACTOR: %s"
+          npm version major --force -m "New major release by $GITHUB_ACTOR: v%s"
       - name: Push release commit and tag to GitHub
         run: |
           git push gh-origin HEAD:master
