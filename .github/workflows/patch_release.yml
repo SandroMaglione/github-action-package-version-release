@@ -7,6 +7,7 @@ on:
     # When something changes, excluded package/package-lock
     # and files that are included in minor and major releases
     paths-ignore:
+      - ".github"
       - "package.json"
       - "package-lock.json"
       # Exclude files from `major`
