@@ -1,0 +1,32 @@
+# Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
+name: Bump major version of before new release/deploy
+on:
+  push:
+    branches:
+      - main
+    # When something changes, excluded package/package-lock
+    # and files that are included in major and major releases
+    paths:
+      - "major.js"
+
+jobs:
+  release-new-major-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Release author
+        run: |
+          git config user.name $GITHUB_ACTOR
+          git config user.email gh-actions-${GITHUB_ACTOR}@github.com
+          git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        env:
+          # GitHub automatically creates a GITHUB_TOKEN secret (use it to authenticate in a workflow run)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup node environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+      - name: Release major version
+        run: npm version major --force -m "New major release by `$GITHUB_ACTOR`: %s"
+      - name: Push release commit and tag to GitHub
+        run: git push gh-origin HEAD:master --tags

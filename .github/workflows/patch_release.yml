@@ -1,0 +1,38 @@
+# Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
+name: Bump patch version of before new release/deploy
+on:
+  push:
+    branches:
+      - main
+    # When something changes, excluded package/package-lock
+    # and files that are included in minor and major releases
+    paths:
+      - "**"
+      - "!package.json"
+      - "!package-lock.json"
+      # Exclude files from `major`
+      - "!major.js"
+      # Exclude files from `minor`
+      - "!minor.js"
+
+jobs:
+  release-new-patch-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Release author
+        run: |
+          git config user.name $GITHUB_ACTOR
+          git config user.email gh-actions-${GITHUB_ACTOR}@github.com
+          git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        env:
+          # GitHub automatically creates a GITHUB_TOKEN secret (use it to authenticate in a workflow run)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup node environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+      - name: Release patch version
+        run: npm version patch --force -m "New patch release by `$GITHUB_ACTOR`: %s"
+      - name: Push release commit and tag to GitHub
+        run: git push gh-origin HEAD:master --tags
