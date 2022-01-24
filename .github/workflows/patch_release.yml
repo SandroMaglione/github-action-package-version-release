@@ -3,7 +3,7 @@ name: Bump patch version of before new release/deploy
 on:
   push:
     branches:
-      - main
+      - master
     # When something changes, excluded package/package-lock
     # and files that are included in minor and major releases
     paths-ignore:
