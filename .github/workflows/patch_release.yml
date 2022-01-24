@@ -33,6 +33,8 @@ jobs:
         with:
           node-version: "12.x"
       - name: Release patch version
-        run: npm version patch --force -m "New patch release by ${{ secrets.GITHUB_ACTOR }}: %s"
+        run: |
+          GITHUB_ACTOR = $GITHUB_ACTOR
+          npm version patch --force -m "New patch release by $GITHUB_ACTOR: %s"
       - name: Push release commit and tag to GitHub
         run: git push gh-origin HEAD:master --tags
