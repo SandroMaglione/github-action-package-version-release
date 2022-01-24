@@ -5,7 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "patch.js"
+      - "**"
+      - "!minor.js"
+      - "!major.js"
 
 jobs:
   release-new-patch-version:
