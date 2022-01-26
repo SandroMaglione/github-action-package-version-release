@@ -20,7 +20,7 @@ jobs:
           git config user.email gh-actions-${GITHUB_ACTOR}@github.com
           git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           echo "Author: $GITHUB_ACTOR"
-          echo "Repository: https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          echo "Repository: https://${GITHUB_ACTOR}:---@github.com/${GITHUB_REPOSITORY}.git"
         env:
           # GitHub automatically creates a GITHUB_TOKEN secret (use it to authenticate in a workflow run)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
