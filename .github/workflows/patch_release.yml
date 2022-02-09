@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "12.x"
-      - name: Release patch version
+      - name: Release patch version with commit to GitHub
         working-directory: ./subfolder
         run: |
           export GITHUB_ACTOR=$GITHUB_ACTOR
@@ -37,7 +37,3 @@ jobs:
           cd ..
           git add .
           git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
-      - name: Push release commit and tag to GitHub
-        run: |
-          git push gh-origin HEAD:master
-          git push gh-origin --tags
