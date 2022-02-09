@@ -29,10 +29,14 @@ jobs:
         with:
           node-version: "12.x"
       - name: Release patch version
+        working-directory: ./subfolder
         run: |
           export GITHUB_ACTOR=$GITHUB_ACTOR
           export REPO=https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          npm version patch --force -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
+          npm version patch --force
+          cd ..
+          git add .
+          git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
       - name: Push release commit and tag to GitHub
         run: |
           git push gh-origin HEAD:master
