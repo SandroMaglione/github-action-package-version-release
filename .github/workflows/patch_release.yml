@@ -1,6 +1,10 @@
 # Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
 name: Bump patch version of before new release/deploy
 on:
+  # pull_request_review:
+  #   types: [submitted]
+  # pull_request:
+  #   types: [opened]
   push:
     branches:
       - master
@@ -10,24 +14,26 @@ on:
       - "!major.js"
 
 jobs:
-  release-new-patch-version:
+  createPullRequest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Release author
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name $GITHUB_ACTOR
           git config user.email gh-actions-${GITHUB_ACTOR}@github.com
           git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           echo "Author: $GITHUB_ACTOR"
           echo "Repository: ${GITHUB_ACTOR}:---github.com/${GITHUB_REPOSITORY}.git"
-        env:
-          # GitHub automatically creates a GITHUB_TOKEN secret (use it to authenticate in a workflow run)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup node environment
         uses: actions/setup-node@v2
         with:
           node-version: "12.x"
+
       - name: Release patch version
         working-directory: ./subfolder
         run: |
@@ -37,7 +43,30 @@ jobs:
           cd ..
           git add .
           git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
-      - name: Push release commit and tag to GitHub
-        run: |
-          git push gh-origin HEAD:master
-          git push gh-origin --tags
+          git push
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update report
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: example-patches
+          delete-branch: true
+          title: "bump(client) Bump package version"
+          body: |
+            Update report
+          labels: |
+            bump package version
+            automated pr
+          milestone: 1
+          draft: false
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v1
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: rebase
