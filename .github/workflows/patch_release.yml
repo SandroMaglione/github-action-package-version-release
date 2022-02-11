@@ -52,7 +52,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: false
-          branch: example-patches
+          branch: pr-auto
           delete-branch: true
           title: "bump(client) Bump package version"
           body: |
@@ -60,7 +60,6 @@ jobs:
           labels: |
             bump package version
             automated pr
-          milestone: 1
           draft: false
 
       - name: Enable Pull Request Automerge
