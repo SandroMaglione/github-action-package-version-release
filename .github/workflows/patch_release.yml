@@ -1,9 +1,10 @@
 # Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
 name: Bump patch version of before new release/deploy
 on:
-  push:
-    branches:
-      - master
+  # pull_request_review:
+  #   types: [submitted]
+  pull_request:
+    types: [opened]
     paths:
       - "**"
       - "!minor.js"
@@ -11,9 +12,11 @@ on:
 
 jobs:
   release-new-patch-version:
+    # if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Release author
         run: |
           git config user.name $GITHUB_ACTOR
@@ -24,10 +27,17 @@ jobs:
         env:
           # GitHub automatically creates a GITHUB_TOKEN secret (use it to authenticate in a workflow run)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout PR
+        run: gh pr checkout ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup node environment
         uses: actions/setup-node@v2
         with:
           node-version: "12.x"
+
       - name: Release patch version
         working-directory: ./subfolder
         run: |
@@ -36,8 +46,5 @@ jobs:
           npm version patch --force
           cd ..
           git add .
-          git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
-      - name: Push release commit and tag to GitHub
-        run: |
-          git push gh-origin HEAD:master
-          git push gh-origin --tags
+          git commit -m "New patch release approved by $GITHUB_ACTOR in $REPO: v%s"
+          git push
