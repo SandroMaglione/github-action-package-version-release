@@ -6,7 +6,7 @@ on:
   #     - master
   #   types: [closed]
   pull_request_review:
-    types: [submitted]
+    types: [opened]
     paths:
       - "**"
       - "!minor.js"
@@ -14,7 +14,7 @@ on:
 
 jobs:
   createPullRequest:
-    if: github.event.review.state == 'approved'
+    # if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
