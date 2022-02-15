@@ -1,20 +1,20 @@
 # Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
 name: Bump patch version of before new release/deploy
 on:
-  pull_request:
-    branches:
-      - master
-    types: [closed]
+  # pull_request:
+  #   branches:
+  #     - master
+  #   types: [closed]
+  pull_request_review:
+    types: [opened]
     paths:
       - "**"
       - "!minor.js"
       - "!major.js"
-  # pull_request_review:
-  #   types: [submitted]
 
 jobs:
   createPullRequest:
-    if: github.event.pull_request.merged == true
+    # if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,5 +47,5 @@ jobs:
           npm version patch --force
           cd ..
           git add .
-          git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
+          git commit -m "[Approved] New patch release by $GITHUB_ACTOR in $REPO: v%s"
           git push
