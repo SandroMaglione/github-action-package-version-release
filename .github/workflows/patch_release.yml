@@ -1,20 +1,20 @@
 # Source: https://www.geekytidbits.com/github-actions-version-and-release-to-npm/
 name: Bump patch version of before new release/deploy
 on:
-  # pull_request_review:
-  #   types: [submitted]
-  # pull_request:
-  #   types: [opened]
-  push:
+  pull_request:
     branches:
-      - master
+      - main
+    types: [closed]
     paths:
       - "**"
       - "!minor.js"
       - "!major.js"
+  # pull_request_review:
+  #   types: [submitted]
 
 jobs:
   createPullRequest:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -28,6 +28,11 @@ jobs:
           git remote add gh-origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           echo "Author: $GITHUB_ACTOR"
           echo "Repository: ${GITHUB_ACTOR}:---github.com/${GITHUB_REPOSITORY}.git"
+
+      - name: Checkout PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout ${{ github.event.pull_request.number }}
 
       - name: Setup node environment
         uses: actions/setup-node@v2
@@ -43,29 +48,3 @@ jobs:
           cd ..
           git add .
           git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v3
-        with:
-          commit-message: Update report
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
-          branch: pr-auto
-          delete-branch: true
-          title: "bump(client) Bump package version"
-          body: |
-            Update report
-          labels: |
-            bump package version
-            automated pr
-          draft: false
-
-      - name: Enable Pull Request Automerge
-        if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: peter-evans/enable-pull-request-automerge@v1
-        with:
-          token: ${{ secrets.PAT }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: rebase
