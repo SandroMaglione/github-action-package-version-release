@@ -3,7 +3,7 @@ name: Bump patch version of before new release/deploy
 on:
   pull_request:
     branches:
-      - main
+      - master
     types: [closed]
     paths:
       - "**"
