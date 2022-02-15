@@ -48,3 +48,4 @@ jobs:
           cd ..
           git add .
           git commit -m "New patch release by $GITHUB_ACTOR in $REPO: v%s"
+          git push
